@@ -6,12 +6,11 @@ import { ConfigModule } from '@nestjs/config';
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    MongooseModule.forRoot(process.env.MONGO_URI), 
-    AuthModule
+    MongooseModule.forRoot(process.env.MONGO_URI),
+
+    AuthModule,
   ],
   controllers: [],
   providers: [],
 })
-export class AppModule {
-  
-}
+export class AppModule {}
