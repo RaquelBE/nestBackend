@@ -4,15 +4,15 @@ import {
   InternalServerErrorException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from './entities/user.entity';
-import { CreateUserDto } from './dto/create-user.dto';
+import { CreateUserDto, RegisterUserDto, UpdateAuthDto } from './dto';
 import * as bcryptjs from 'bcryptjs';
 import { LoginDto } from './dto/login.dto';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './interfaces/jwt-payload';
+import { LoginResponse } from './interfaces/login-response';
 
 @Injectable()
 export class AuthService {
@@ -43,7 +43,16 @@ export class AuthService {
     }
   }
 
-  async login(loginDto: LoginDto) {
+  async register(registerDto: RegisterUserDto): Promise<LoginResponse> {
+    const user = await this.create(registerDto);
+
+    return {
+      user: user,
+      token: this.getJwtToken({ id: user._id }),
+    };
+  }
+
+  async login(loginDto: LoginDto): Promise<LoginResponse> {
     const { email, password } = loginDto;
 
     const user = await this.userModel.findOne({ email });
@@ -72,7 +81,7 @@ export class AuthService {
     return `This action returns a #${id} auth`;
   }
 
-  update(id: number, updateAuthDto: UpdateUserDto) {
+  update(id: number, updateAuthDto: UpdateAuthDto) {
     return `This action updates a #${id} auth`;
   }
 
